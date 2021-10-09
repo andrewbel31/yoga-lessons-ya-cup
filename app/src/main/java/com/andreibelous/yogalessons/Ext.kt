@@ -2,6 +2,8 @@ package com.andreibelous.yogalessons
 
 import android.content.Context
 import android.view.View
+import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 import io.reactivex.Observable
 import io.reactivex.functions.Consumer
 import kotlin.math.ceil
@@ -23,3 +25,7 @@ fun View.visible() {
 fun View.gone() {
     visibility = View.GONE
 }
+
+inline fun <reified T> Any.cast() = this as T
+
+fun Context.getColorCompat(@ColorRes color: Int) = ContextCompat.getColor(this, color)

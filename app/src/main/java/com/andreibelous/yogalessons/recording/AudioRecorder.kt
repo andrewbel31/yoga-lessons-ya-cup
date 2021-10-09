@@ -136,13 +136,17 @@ class RecordingHandler(
     private fun finishRecording() {
         stop()
         releaseRecorder()
-        val processed = processor.process(amplitudes, times)
-        events.accept(
-            AudioRecorder.Event.Finished(
-                token = UUID.randomUUID().toString(),
-                data = processed
+        try {
+            val processed = processor.process(amplitudes, times)
+            events.accept(
+                AudioRecorder.Event.Finished(
+                    token = UUID.randomUUID().toString(),
+                    data = processed
+                )
             )
-        )
+        } catch (e: Exception) {
+            events.accept(AudioRecorder.Event.ErrorHappened(e))
+        }
     }
 
     private fun deleteFileIfExists() {
