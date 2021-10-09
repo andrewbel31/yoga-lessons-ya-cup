@@ -14,6 +14,7 @@ import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.andreibelous.yogalessons.R
+import com.andreibelous.yogalessons.view.animation.lerp
 
 class GradientView
 @JvmOverloads constructor(
@@ -58,12 +59,20 @@ class GradientView
             invalidate()
         }
 
+    private var currentScale = 1.3f
+        set(value) {
+            field = value
+            invalidate()
+        }
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
 
         animator = ObjectAnimator.ofFloat(0f, 1f).apply {
             addUpdateListener {
                 currentAngle = -45f + (it.animatedValue as Float) * 270
+                val fraction = it.animatedFraction
+                currentScale = lerp(1.3f, 1.0f, fraction)
             }
             interpolator = LinearOutSlowInInterpolator()
             duration = 1500L
@@ -85,6 +94,7 @@ class GradientView
         canvas.save()
         canvas.translate(width / 2f, height / 2f)
         canvas.rotate(currentAngle)
+        canvas.scale(currentScale, currentScale)
         canvas.drawPaint(paint)
         canvas.restore()
     }
