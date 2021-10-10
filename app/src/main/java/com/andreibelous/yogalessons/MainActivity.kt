@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.andreibelous.yogalessons.mapper.NewsToViewAction
 import com.andreibelous.yogalessons.mapper.StateToViewModel
 import com.andreibelous.yogalessons.mapper.UiEventToWish
 import com.andreibelous.yogalessons.recording.AudioRecorder
@@ -13,7 +14,7 @@ import com.andreibelous.yogalessons.recording.AudioRecordingFeature
 import com.andreibelous.yogalessons.view.AudioRecordingView
 import com.badoo.binder.Binder
 import com.badoo.binder.using
-import com.badoo.mvicore.android.lifecycle.StartStopBinderLifecycle
+import com.badoo.mvicore.android.lifecycle.CreateDestroyBinderLifecycle
 import io.reactivex.disposables.CompositeDisposable
 
 class MainActivity : AppCompatActivity() {
@@ -27,15 +28,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         disposables = CompositeDisposable()
-        val view = AudioRecordingView(findViewById(R.id.root))
+        val view = AudioRecordingView(findViewById(R.id.root), lifecycle)
         val recorder = AudioRecorder(applicationContext).also { audioRecorder = it }
         val feature = AudioRecordingFeature(recorder).also { audioFeature = it }
         disposables?.add(feature)
 
-        with(Binder(StartStopBinderLifecycle(lifecycle))) {
-            bind(view to feature using UiEventToWish())
+        with(Binder(CreateDestroyBinderLifecycle(lifecycle))) {
+            bind(view to feature using UiEventToWish)
             bind(feature to view using StateToViewModel)
             bind(view to ::handleUiEvent.asConsumer())
+            bind(feature.news to view::execute.asConsumer() using NewsToViewAction)
         }
     }
 

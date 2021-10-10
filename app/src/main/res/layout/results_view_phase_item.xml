@@ -4,32 +4,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center"
-    android:orientation="vertical"
-    tools:parentTag="android.widget.LinearLayout">
-
-    <View
-        android:id="@+id/header_item_top_image"
-        android:layout_width="40dp"
-        android:layout_height="5dp"
-        android:layout_marginTop="24dp"
-        android:background="#808080" />
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <TextView
-        android:id="@+id/header_item_title"
+        android:id="@+id/phase_item_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_weight="1"
+        android:gravity="start|center_vertical"
+        android:padding="8dp"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/phase_item_guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/phase_item_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:padding="16dp"
-        android:text="Ваши результаты"
-        android:textSize="36dp"
-        android:textStyle="bold" />
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
 
-    <com.andreibelous.yogalessons.view.results.AmplitudesViewV2
-        android:id="@+id/header_item_amplitude_view"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_margin="16dp" />
+    <TextView
+        android:id="@+id/phase_item_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:gravity="start|center_vertical"
+        android:textColor="@color/black"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1"
+        app:layout_constraintStart_toEndOf="@id/phase_item_guideline"
+        app:layout_constraintTop_toTopOf="parent" />
 
-
+    <View
+        android:id="@+id/phase_delimiter"
+        android:layout_width="0dp"
+        android:layout_height="0.5dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </merge>

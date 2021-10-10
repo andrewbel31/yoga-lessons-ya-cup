@@ -7,6 +7,7 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/content_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
@@ -68,7 +69,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Дышыте спокойно"
+            android:text="дышите спокойно"
             android:textColor="@android:color/white"
             android:textSize="24dp"
             android:visibility="gone"
@@ -88,7 +89,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/label_title" />
 
-        <com.andreibelous.yogalessons.view.waves.AmplitudesView
+        <com.andreibelous.yogalessons.view.waves.AmplitudesDebugView
             android:id="@+id/amplitudes_view"
             android:layout_width="match_parent"
             android:layout_height="140dp"
@@ -99,6 +100,13 @@
             app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/dim_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black_30"
+        android:visibility="gone" />
 
     <com.andreibelous.yogalessons.view.results.ResultsView
         android:id="@+id/results_view"

@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import com.andreibelous.yogalessons.recording.ProcessedResult
 
-class AmplitudesView
+class AmplitudesDebugView
 @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

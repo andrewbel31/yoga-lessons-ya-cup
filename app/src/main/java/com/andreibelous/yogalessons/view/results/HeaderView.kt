@@ -4,8 +4,11 @@ import android.content.Context
 import android.graphics.LinearGradient
 import android.graphics.Outline
 import android.graphics.Shader
+import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -24,7 +27,19 @@ class HeaderView
     init {
         inflate(context, R.layout.results_view_header_item, this)
         orientation = VERTICAL
+        gravity = Gravity.CENTER
+        layoutParams =
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+            )
     }
+
+    private val colors = intArrayOf(
+        context.getColorCompat(R.color.gradient_start),
+        context.getColorCompat(R.color.gradient_center),
+        context.getColorCompat(R.color.gradient_end)
+    )
 
     private val topImage = findViewById<View>(R.id.header_item_top_image).apply {
         this.clipToOutline = true
@@ -38,11 +53,7 @@ class HeaderView
 
     private val text = findViewById<TextView>(R.id.header_item_title).apply {
         doOnPreDraw {
-            val colors = intArrayOf(
-                context.getColorCompat(R.color.gradient_start),
-                context.getColorCompat(R.color.gradient_center),
-                context.getColorCompat(R.color.gradient_end)
-            )
+
             paint.shader =
                 LinearGradient(
                     0f,

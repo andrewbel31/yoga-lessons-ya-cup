@@ -10,6 +10,7 @@ class Processor {
     private val filter = SGFilter(N, N)
     private val coefficients = SGFilter.computeSGCoefficients(N, N, 5)
     private val sdf = SimpleDateFormat("hh:mm:ss.SSS", Locale.getDefault())
+    private val sdfDuration = SimpleDateFormat("ss:SS", Locale.getDefault())
     private val calendar = Calendar.getInstance()
 
     fun process(amplitude: List<Int>, times: List<Long>): ProcessedResult {
@@ -25,6 +26,7 @@ class Processor {
         return ProcessedResult(
             noiseLevel = noiseLevel,
             amplitude = smoothed.toList(),
+            rawAmplitude = amplitude.map { it.toDouble() },
             times = switchTimesIndices,
             phases = phases
         )
@@ -105,13 +107,16 @@ class Processor {
 
         // i in intervals is the time index in which this interval started
         val phases = mutableListOf<Phase>().apply {
+            val start = times.first()
+            val end = times[intervals.first()]
             add(
                 Phase(
-                    start = times.first(),
-                    end = times[intervals.first()],
+                    start = start,
+                    end = end,
                     type = Phase.Type.Pause,
-                    startStr = times.first().format(),
-                    endStr = times[intervals.first()].format()
+                    startStr = start.formatEndPoints(),
+                    endStr = end.formatEndPoints(),
+                    durationStr = (end - start).formatDuration()
                 )
             )
         }
@@ -134,8 +139,9 @@ class Processor {
                     start = start,
                     end = end,
                     type = typeToAdd,
-                    startStr = start.format(),
-                    endStr = end.format()
+                    startStr = start.formatEndPoints(),
+                    endStr = end.formatEndPoints(),
+                    durationStr = (end - start).formatDuration()
                 )
             )
 
@@ -148,8 +154,9 @@ class Processor {
                     start = pauseStart,
                     end = pauseEnd,
                     type = Phase.Type.Pause,
-                    startStr = pauseStart.format(),
-                    endStr = pauseEnd.format()
+                    startStr = pauseStart.formatEndPoints(),
+                    endStr = pauseEnd.formatEndPoints(),
+                    durationStr = (pauseEnd - pauseStart).formatDuration()
                 )
             )
         }
@@ -160,9 +167,14 @@ class Processor {
     private fun <T> List<T>.makeEvenElementCount() =
         if (size.isEven()) this else this.subList(0, size - 1)
 
-    private fun Long.format(): String {
+    private fun Long.formatEndPoints(): String {
         calendar.timeInMillis = this
         return sdf.format(calendar.time)
+    }
+
+    private fun Long.formatDuration(): String {
+        calendar.timeInMillis = this
+        return sdfDuration.format(calendar.time)
     }
 
     private fun List<Int>.removeZeros(): List<Int> {
@@ -203,6 +215,7 @@ data class Phase(
     val end: Long,
     val startStr: String,
     val endStr: String,
+    val durationStr: String,
     val type: Type
 ) {
 
@@ -218,6 +231,7 @@ data class Phase(
 data class ProcessedResult(
     val noiseLevel: Double,
     val amplitude: List<Double>,
+    val rawAmplitude: List<Double>,
     val times: List<Int>,
     val phases: List<Phase>
 )

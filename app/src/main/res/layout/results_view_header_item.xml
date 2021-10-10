@@ -4,40 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:background="@color/white"
     tools:parentTag="android.widget.LinearLayout">
 
+    <View
+        android:id="@+id/header_item_top_image"
+        android:layout_width="40dp"
+        android:layout_height="5dp"
+        android:layout_marginTop="24dp"
+        android:background="#808080" />
+
     <TextView
-        android:id="@+id/phase_item_title"
-        android:layout_width="0dp"
+        android:id="@+id/header_item_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:padding="8dp"
-        android:textColor="@color/black"
-        android:textSize="20dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="Ваши результаты"
+        android:textSize="36dp"
         android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/phase_item_from"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:textColor="@color/black"
-        android:textSize="16dp" />
-
-    <ImageView
-        android:id="@+id/phase_item_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        app:srcCompat="@drawable/ic_baseline_arrow_right_alt_24" />
-
-    <TextView
-        android:id="@+id/phase_item_to"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:textColor="@color/black"
-        android:textSize="16dp" />
+    <com.andreibelous.yogalessons.view.results.AmplitudesViewV2
+        android:id="@+id/header_item_amplitude_view"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_margin="16dp" />
 </merge>

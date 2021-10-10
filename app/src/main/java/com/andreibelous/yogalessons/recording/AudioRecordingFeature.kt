@@ -6,6 +6,7 @@ import com.andreibelous.yogalessons.recording.AudioRecordingState.*
 import com.andreibelous.yogalessons.toObservable
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Bootstrapper
+import com.badoo.mvicore.element.NewsPublisher
 import com.badoo.mvicore.element.Reducer
 import com.badoo.mvicore.feature.BaseFeature
 import com.badoo.mvicore.feature.Feature
@@ -19,7 +20,8 @@ class AudioRecordingFeature(
     wishToAction = Action::ExecuteWish,
     actor = ActorImpl(audioRecorder),
     reducer = ReducerImpl(),
-    bootstrapper = BootstrapperImpl(audioRecorder)
+    bootstrapper = BootstrapperImpl(audioRecorder),
+    newsPublisher = NewsPublisherImpl()
 ) {
 
     sealed interface Wish {
@@ -31,6 +33,8 @@ class AudioRecordingFeature(
 
     sealed interface News {
 
+        object Finished : News
+        object Error : News
     }
 
     private sealed interface Effect {
@@ -133,5 +137,15 @@ class AudioRecordingFeature(
                         is AudioRecorder.Event.TimeUpdated -> Action.HandleTimeUpdated(event.millis)
                     }
                 }
+    }
+
+    private class NewsPublisherImpl : NewsPublisher<Action, Effect, AudioRecordingState, News> {
+
+        override fun invoke(action: Action, effect: Effect, state: AudioRecordingState): News? =
+            when (effect) {
+                is Effect.ErrorHappened -> News.Error
+                is Effect.RecordingFinished -> News.Finished
+                else -> null
+            }
     }
 }

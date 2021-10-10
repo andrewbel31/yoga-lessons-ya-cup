@@ -4,6 +4,9 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import com.andreibelous.yogalessons.R
+import com.andreibelous.yogalessons.dp
+import com.andreibelous.yogalessons.getColorCompat
 
 class AmplitudesViewV2
 @JvmOverloads constructor(
@@ -27,11 +30,30 @@ class AmplitudesViewV2
     private var max = 0.0
     private var min = 0.0
 
-    private var path = Path()
-    private var paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.WHITE
+    private var paint = Paint().apply {
         pathEffect = CornerPathEffect(10f)
         style = Paint.Style.STROKE
+        strokeWidth = context.dp(2f)
+    }
+
+    private val colors = intArrayOf(
+        context.getColorCompat(R.color.gradient_start),
+        context.getColorCompat(R.color.gradient_center),
+        context.getColorCompat(R.color.gradient_end)
+    )
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+
+        paint.shader = LinearGradient(
+            0f,
+            0f,
+            width.toFloat(),
+            height.toFloat(),
+            colors,
+            null,
+            Shader.TileMode.CLAMP
+        )
     }
 
     fun bind(model: AmplitudesViewModelV2) {
@@ -54,20 +76,14 @@ class AmplitudesViewV2
 
     private fun drawPath(canvas: Canvas) {
         val scaleX = width / data.size.toFloat()
-        val scaleY = height / (max - min)
+        val scaleY = height / (max - min) / 2
 
-        with(path) {
-            reset()
-            moveTo(0f, -(data[0] * scaleY).toFloat() + height)
+        for (i in data.indices) {
+            val x = i * scaleX
+            val y1 = height / 2 + (scaleY * data[i]).toFloat()
+            val y2 = height / 2 - (scaleY * data[i]).toFloat()
 
-            for (i in 1 until data.size) {
-                path.lineTo(
-                    ((i) * scaleX),
-                    -(data[i] * scaleY).toFloat() + height
-                )
-            }
-
-            canvas.drawPath(this, paint)
+            canvas.drawLine(x, y1, x, y2, paint)
         }
     }
 }

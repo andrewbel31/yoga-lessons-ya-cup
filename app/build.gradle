@@ -40,6 +40,7 @@ dependencies {
     implementation "com.google.android.material:material:1.4.0"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
     implementation "androidx.activity:activity-compose:1.3.1"
+    implementation "androidx.lifecycle:lifecycle-common-java8:2.3.1"
 
     // RX
     implementation "io.reactivex.rxjava2:rxjava:2.2.19"
@@ -55,5 +56,4 @@ dependencies {
 
     // math
     implementation 'io.github.ruozhuochen:savitzky-golay-filter:1.0.1'
-    implementation 'io.github.adrianulbona:hmm:0.1.0'
 }

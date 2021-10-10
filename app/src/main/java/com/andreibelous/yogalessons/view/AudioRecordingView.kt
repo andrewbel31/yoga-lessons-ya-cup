@@ -9,16 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.widget.TextView
-import com.andreibelous.yogalessons.R
-import com.andreibelous.yogalessons.gone
+import androidx.appcompat.app.AlertDialog
+import androidx.core.view.doOnPreDraw
+import androidx.lifecycle.Lifecycle
+import com.andreibelous.yogalessons.*
 import com.andreibelous.yogalessons.recording.ProcessedResult
 import com.andreibelous.yogalessons.view.animation.*
 import com.andreibelous.yogalessons.view.results.ResultsView
 import com.andreibelous.yogalessons.view.results.ResultsViewModel
-import com.andreibelous.yogalessons.view.waves.AmplitudesView
-import com.andreibelous.yogalessons.view.waves.AmplitudesViewModel
+import com.andreibelous.yogalessons.view.waves.AmplitudesDebugView
 import com.andreibelous.yogalessons.view.waves.WavesView
-import com.andreibelous.yogalessons.visible
 import com.badoo.mvicore.modelWatcher
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.jakewharton.rxrelay2.PublishRelay
@@ -27,6 +27,7 @@ import io.reactivex.functions.Consumer
 
 class AudioRecordingView(
     root: ViewGroup,
+    lifecycle: Lifecycle,
     private val events: PublishRelay<Event> = PublishRelay.create()
 ) : Consumer<AudioRecordingViewModel>, ObservableSource<AudioRecordingView.Event> by events {
 
@@ -38,14 +39,49 @@ class AudioRecordingView(
         object CloseClicked : Event
     }
 
+    private val context = root.context
+    private val contentRoot = root.findViewById<ViewGroup>(R.id.content_root)
+    private var dialog: AlertDialog? = null
     private val waves = root.findViewById<WavesView>(R.id.waves)
-    private val button = root.findViewById<TextView>(R.id.button_step)
-    private val buttonClose = root.findViewById<View>(R.id.button_close)
+    private val button = root.findViewById<TextView>(R.id.button_step).apply {
+        RippleDrawable(
+            ColorStateList.valueOf(android.graphics.Color.WHITE),
+            null,
+            ShapeDrawable(OvalShape())
+        )
+    }
+    private val buttonClose = root.findViewById<View>(R.id.button_close).apply {
+        setOnClickListener { events.accept(Event.CloseClicked) }
+        background = RippleDrawable(
+            ColorStateList.valueOf(android.graphics.Color.WHITE),
+            null,
+            ShapeDrawable(OvalShape())
+        )
+    }
     private val time = root.findViewById<TextView>(R.id.label_time)
     private val timeTitle = root.findViewById<TextView>(R.id.label_title)
-    private val amplitudes = root.findViewById<AmplitudesView>(R.id.amplitudes_view)
+    private val amplitudes = root.findViewById<AmplitudesDebugView>(R.id.amplitudes_view)
     private val resultsView = root.findViewById<ResultsView>(R.id.results_view)
-    private val behaviour = BottomSheetBehavior.from(resultsView)
+    private val dimOverlay = root.findViewById<View>(R.id.dim_overlay).apply {
+        alpha = 0.0f
+        gone()
+    }
+    private val behaviour = BottomSheetBehavior.from(resultsView).apply {
+        addBottomSheetCallback(
+            object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    when (newState) {
+                        BottomSheetBehavior.STATE_COLLAPSED -> dimOverlay.gone()
+                    }
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                    val progress = maxOf(slideOffset, 0f)
+                    dimOverlay.alpha = progress
+                }
+            }
+        )
+    }
 
     private var timeAnimatedState by animatedFloat(
         initial = 0f,
@@ -68,21 +104,23 @@ class AudioRecordingView(
     }
 
     init {
-        buttonClose.setOnClickListener { events.accept(Event.CloseClicked) }
-        buttonClose.background = RippleDrawable(
-            ColorStateList.valueOf(android.graphics.Color.WHITE),
-            null,
-            ShapeDrawable(OvalShape())
-        )
+        with(contentRoot) {
+            layoutTransition = LayoutTransition()
+            clipChildren = false
+        }
 
-        button.background = RippleDrawable(
-            ColorStateList.valueOf(android.graphics.Color.WHITE),
-            null,
-            ShapeDrawable(OvalShape())
-        )
-        root.layoutTransition = LayoutTransition()
-        root.clipChildren = false
-        hideBottomSheet()
+        root.doOnPreDraw {
+            resultsView.layoutParams = resultsView.layoutParams.apply {
+                height = (root.height * 0.75f).toInt()
+            }
+        }
+
+        hideResults()
+        dimOverlay.setOnClickListener { behaviour.state = BottomSheetBehavior.STATE_COLLAPSED }
+        lifecycle.subscribe {
+            dialog?.dismiss()
+            dialog = null
+        }
     }
 
     override fun accept(vm: AudioRecordingViewModel) {
@@ -106,21 +144,18 @@ class AudioRecordingView(
         watch(AudioRecordingViewModel::step) {
             when (val step = it) {
                 is AudioRecordingViewModel.Step.Initial -> {
-                    hideBottomSheet()
-                    amplitudes.gone()
+                    hideResults()
                     button.text = "старт"
                     amplitudes
                     button.setOnClickListener { events.accept(Event.StartClicked) }
                 }
                 is AudioRecordingViewModel.Step.Recording -> {
-                    hideBottomSheet()
-                    amplitudes.gone()
+                    hideResults()
                     button.text = "стоп"
                     button.setOnClickListener { events.accept(Event.StopClicked) }
                 }
                 is AudioRecordingViewModel.Step.Error -> {
-                    hideBottomSheet()
-                    amplitudes.gone()
+                    hideResults()
                     button.text = "старт"
                     button.setOnClickListener { events.accept(Event.StartClicked) }
                 }
@@ -128,14 +163,7 @@ class AudioRecordingView(
                     button.text = "старт"
                     button.setOnClickListener { events.accept(Event.StartClicked) }
                     if (step.result.amplitude.isNotEmpty()) {
-                        amplitudes.visible()
-                        amplitudes.bind(
-                            AmplitudesViewModel(
-                                token = step.token,
-                                data = step.result
-                            )
-                        )
-                        showBottomSheet(
+                        resultsView.bind(
                             ResultsViewModel(
                                 token = step.token,
                                 result = step.result
@@ -143,22 +171,52 @@ class AudioRecordingView(
                                 events.accept(Event.ShareClicked)
                             }
                         )
+                        if (BuildConfig.DEBUG) {
+                            amplitudes.visible()
+                        }
+
                     } else {
-                        amplitudes.gone()
-                        hideBottomSheet()
+                        hideResults()
                     }
                 }
             }
         }
     }
 
-    private fun showBottomSheet(model: ResultsViewModel) {
-        resultsView.bind(model)
-        behaviour.state = BottomSheetBehavior.STATE_EXPANDED
+    private fun hideResults() {
+        amplitudes.gone()
+        behaviour.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
-    private fun hideBottomSheet() {
-        behaviour.state = BottomSheetBehavior.STATE_COLLAPSED
+    fun execute(action: Action) {
+        when (action) {
+            is Action.ShowResultsDialog -> {
+                dimOverlay.visible()
+                behaviour.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+            is Action.ShowError -> {
+                dialog?.dismiss()
+                AlertDialog.Builder(context)
+                    .setTitle("Упс...")
+                    .setMessage("Что то пошло не так. Попробуете еще раз?")
+                    .setPositiveButton("попробовать") { _, _ -> events.accept(Event.StartClicked) }
+                    .setNegativeButton("нет") { _, _ ->
+                        dialog?.dismiss()
+                        dialog = null
+                    }
+                    .setCancelable(true)
+                    .create()
+                    .also { dialog = it }
+                    .show()
+
+            }
+        }
+    }
+
+    sealed interface Action {
+
+        object ShowResultsDialog : Action
+        object ShowError : Action
     }
 }
 

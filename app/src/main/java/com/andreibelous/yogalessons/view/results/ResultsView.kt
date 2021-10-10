@@ -53,7 +53,7 @@ class ResultsView
         items.add(
             ResultListItem.HeaderItem(
                 token = token,
-                data = result.amplitude
+                data = result.rawAmplitude
             )
         )
 
@@ -137,7 +137,7 @@ private class Adapter(
     private class ShareViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(model: ResultListItem.ShareItem) {
-
+            itemView.cast<ShareView>().bind { model.clickAction() }
         }
     }
 
