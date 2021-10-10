@@ -2,9 +2,12 @@ package com.andreibelous.yogalessons.view
 
 import android.animation.LayoutTransition
 import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
+import android.graphics.drawable.shapes.RoundRectShape
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
@@ -61,6 +64,28 @@ class AudioRecordingView(
             null,
             ShapeDrawable(OvalShape())
         )
+    }
+    private val buttonResults = root.findViewById<TextView>(R.id.label_results).apply {
+        val radii = context.dp(24f)
+        val stroke = context.dp(2f)
+        val radiiArr = floatArrayOf(radii, radii, radii, radii, radii, radii, radii, radii)
+        background =
+            RippleDrawable(
+                ColorStateList.valueOf(Color.LTGRAY),
+                GradientDrawable().apply {
+                    setStroke(stroke.toInt(), Color.WHITE)
+                    cornerRadii = radiiArr
+                },
+                ShapeDrawable(
+                    RoundRectShape(
+                        radiiArr,
+                        null,
+                        null
+                    )
+                )
+            )
+
+        setOnClickListener { behaviour.state = BottomSheetBehavior.STATE_EXPANDED }
     }
     private val time = root.findViewById<TextView>(R.id.label_time).apply { alpha = 0.0f }
     private val timeTitle = root.findViewById<TextView>(R.id.label_title).apply { alpha = 0.0f }
@@ -166,6 +191,7 @@ class AudioRecordingView(
                     button.text = "старт"
                     button.setOnClickListener { events.accept(Event.StartClicked) }
                     if (step.result.amplitude.isNotEmpty()) {
+                        buttonResults.visible()
                         resultsView.bind(
                             ResultsViewModel(
                                 token = step.token,
@@ -194,6 +220,7 @@ class AudioRecordingView(
 
     private fun hideResults() {
         amplitudes.gone()
+        buttonResults.gone()
         behaviour.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
