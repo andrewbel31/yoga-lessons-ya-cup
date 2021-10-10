@@ -6,7 +6,6 @@ import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import io.reactivex.Observable
 import io.reactivex.functions.Consumer
@@ -73,4 +72,8 @@ fun Lifecycle.subscribe(
             onDestroy?.invoke()
         }
     })
+}
+
+fun lerp(start: Float, stop: Float, amount: Float): Float {
+    return (1.0f - amount) * start + amount * stop
 }

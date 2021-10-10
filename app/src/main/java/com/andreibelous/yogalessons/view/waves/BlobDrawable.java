@@ -11,35 +11,32 @@ public class BlobDrawable {
 
     private static final float MAX_SPEED = 8.2f;
     private static final float MIN_SPEED = 0.8f;
-
+    private final static float ANIMATION_SPEED_WAVE_HUGE = 0.65f;
+    private final static float ANIMATION_SPEED_WAVE_SMALL = 0.45f;
+    private final static float animationSpeed = 1f - ANIMATION_SPEED_WAVE_HUGE;
+    private final static float animationSpeedTiny = 1f - ANIMATION_SPEED_WAVE_SMALL;
     public static float SCALE_BIG_MIN = 0.878f;
     public static float SCALE_SMALL_MIN = 0.926f;
-
-    public float minRadius;
-    public float maxRadius;
-
     private final Path path = new Path();
-    public Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
     private final float[] radius;
     private final float[] angle;
     private final float[] radiusNext;
     private final float[] angleNext;
     private final float[] progress;
     private final float[] speed;
-
-
     private final float[] pointStart = new float[4];
     private final float[] pointEnd = new float[4];
-
     private final Random random = new Random();
-
     private final float N;
     private final float L;
     private final float cubicBezierK = 1f;
-
     private final Matrix m = new Matrix();
-
+    public float minRadius;
+    public float maxRadius;
+    public Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    public float amplitude;
+    private float animateToAmplitude;
+    private float animateAmplitudeDiff;
     public BlobDrawable(int n) {
         N = n;
         L = (float) ((4.0 / 3.0) * Math.tan(Math.PI / (2 * N)));
@@ -134,16 +131,6 @@ public class BlobDrawable {
             progress[i] = 0;
         }
     }
-
-
-    private float animateToAmplitude;
-    public float amplitude;
-    private float animateAmplitudeDiff;
-
-    private final static float ANIMATION_SPEED_WAVE_HUGE = 0.65f;
-    private final static float ANIMATION_SPEED_WAVE_SMALL = 0.45f;
-    private final static float animationSpeed = 1f - ANIMATION_SPEED_WAVE_HUGE;
-    private final static float animationSpeedTiny = 1f - ANIMATION_SPEED_WAVE_SMALL;
 
     public void setValue(float value, boolean isBig) {
         animateToAmplitude = value;

@@ -9,12 +9,11 @@ import android.graphics.Paint
 import android.graphics.Shader
 import android.util.AttributeSet
 import android.view.View
-import android.view.animation.*
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.andreibelous.yogalessons.R
-import com.andreibelous.yogalessons.view.animation.lerp
+import com.andreibelous.yogalessons.lerp
 
 class GradientView
 @JvmOverloads constructor(

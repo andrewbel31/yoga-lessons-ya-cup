@@ -5,13 +5,11 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.RippleDrawable
 import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable.shapes.RoundRectShape
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.andreibelous.yogalessons.R
 import com.andreibelous.yogalessons.dp

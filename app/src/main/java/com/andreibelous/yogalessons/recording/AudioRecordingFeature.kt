@@ -2,7 +2,7 @@ package com.andreibelous.yogalessons.recording
 
 import com.andreibelous.yogalessons.recording.AudioRecordingFeature.News
 import com.andreibelous.yogalessons.recording.AudioRecordingFeature.Wish
-import com.andreibelous.yogalessons.recording.AudioRecordingState.*
+import com.andreibelous.yogalessons.recording.AudioRecordingState.Step
 import com.andreibelous.yogalessons.toObservable
 import com.badoo.mvicore.element.Actor
 import com.badoo.mvicore.element.Bootstrapper

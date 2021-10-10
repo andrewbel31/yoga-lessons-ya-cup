@@ -7,17 +7,16 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateInterpolator
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.doOnPreDraw
 import androidx.lifecycle.Lifecycle
 import com.andreibelous.yogalessons.*
 import com.andreibelous.yogalessons.recording.ProcessedResult
-import com.andreibelous.yogalessons.view.animation.*
 import com.andreibelous.yogalessons.view.results.ResultsView
 import com.andreibelous.yogalessons.view.results.ResultsViewModel
 import com.andreibelous.yogalessons.view.waves.AmplitudesDebugView
+import com.andreibelous.yogalessons.view.waves.AmplitudesViewModel
 import com.andreibelous.yogalessons.view.waves.WavesView
 import com.badoo.mvicore.modelWatcher
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -83,26 +82,6 @@ class AudioRecordingView(
         )
     }
 
-    private var timeAnimatedState by animatedFloat(
-        initial = 0f,
-        animationSpec = AnimationSpec(
-            duration = 150,
-            interpolator = AccelerateInterpolator()
-        )
-    ) {
-        with(timeTitle) {
-            scaleX = lerp(0.8f, 1f, it)
-            scaleY = lerp(0.8f, 1f, it)
-            alpha = it
-        }
-
-        with(time) {
-            scaleX = lerp(0.8f, 1f, it)
-            scaleY = lerp(0.8f, 1f, it)
-            alpha = it
-        }
-    }
-
     init {
         with(contentRoot) {
             layoutTransition = LayoutTransition()
@@ -135,10 +114,10 @@ class AudioRecordingView(
             if (it != null) {
                 time.visible()
                 timeTitle.visible()
-                timeAnimatedState = 1f
                 time.text = it
             } else {
-                timeAnimatedState = 0f
+                time.gone()
+                timeTitle.gone()
             }
         }
         watch(AudioRecordingViewModel::step) {
@@ -172,6 +151,12 @@ class AudioRecordingView(
                             }
                         )
                         if (BuildConfig.DEBUG) {
+                            amplitudes.bind(
+                                AmplitudesViewModel(
+                                    token = step.token,
+                                    data = step.result
+                                )
+                            )
                             amplitudes.visible()
                         }
 

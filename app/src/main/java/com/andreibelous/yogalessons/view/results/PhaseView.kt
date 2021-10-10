@@ -3,9 +3,7 @@ package com.andreibelous.yogalessons.view.results
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
-import android.view.Gravity
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.andreibelous.yogalessons.R

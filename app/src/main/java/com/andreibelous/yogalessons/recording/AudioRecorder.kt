@@ -2,12 +2,7 @@ package com.andreibelous.yogalessons.recording
 
 import android.content.Context
 import android.media.MediaRecorder
-import android.os.HandlerThread
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
-import android.os.Environment
-import android.os.Build
+import android.os.*
 import android.util.Log
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable

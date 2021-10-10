@@ -2,8 +2,8 @@ package com.andreibelous.yogalessons
 
 import android.Manifest
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.andreibelous.yogalessons.mapper.NewsToViewAction

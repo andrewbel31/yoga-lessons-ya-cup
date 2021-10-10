@@ -1,9 +1,7 @@
 package com.andreibelous.yogalessons.mapper
 
 import com.andreibelous.yogalessons.recording.AudioRecordingFeature
-import com.andreibelous.yogalessons.recording.AudioRecordingFeature.Wish
 import com.andreibelous.yogalessons.view.AudioRecordingView
-import com.andreibelous.yogalessons.view.AudioRecordingView.Event
 
 internal object NewsToViewAction : (AudioRecordingFeature.News) -> AudioRecordingView.Action? {
 
