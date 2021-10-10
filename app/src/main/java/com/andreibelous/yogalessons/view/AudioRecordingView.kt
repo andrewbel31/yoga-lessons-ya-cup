@@ -7,11 +7,16 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.OvershootInterpolator
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.doOnPreDraw
 import androidx.lifecycle.Lifecycle
 import com.andreibelous.yogalessons.*
+import com.andreibelous.yogalessons.animation.AnimationSpec
+import com.andreibelous.yogalessons.animation.animatedFloat
+import com.andreibelous.yogalessons.animation.getValue
+import com.andreibelous.yogalessons.animation.setValue
 import com.andreibelous.yogalessons.recording.ProcessedResult
 import com.andreibelous.yogalessons.view.results.ResultsView
 import com.andreibelous.yogalessons.view.results.ResultsViewModel
@@ -57,14 +62,15 @@ class AudioRecordingView(
             ShapeDrawable(OvalShape())
         )
     }
-    private val time = root.findViewById<TextView>(R.id.label_time)
-    private val timeTitle = root.findViewById<TextView>(R.id.label_title)
+    private val time = root.findViewById<TextView>(R.id.label_time).apply { alpha = 0.0f }
+    private val timeTitle = root.findViewById<TextView>(R.id.label_title).apply { alpha = 0.0f }
     private val amplitudes = root.findViewById<AmplitudesDebugView>(R.id.amplitudes_view)
     private val resultsView = root.findViewById<ResultsView>(R.id.results_view)
-    private val dimOverlay = root.findViewById<View>(R.id.dim_overlay).apply {
-        alpha = 0.0f
-        gone()
-    }
+    private val dimOverlay =
+        root.findViewById<View>(R.id.dim_overlay).apply {
+            alpha = 0.0f
+            gone()
+        }
     private val behaviour = BottomSheetBehavior.from(resultsView).apply {
         addBottomSheetCallback(
             object : BottomSheetBehavior.BottomSheetCallback() {
@@ -80,6 +86,26 @@ class AudioRecordingView(
                 }
             }
         )
+    }
+
+    private var timeAnimatedState by animatedFloat(
+        initial = 0f,
+        animationSpec = AnimationSpec(
+            duration = 150,
+            interpolator = OvershootInterpolator(1.1f)
+        )
+    ) {
+        with(timeTitle) {
+            scaleX = lerp(0.8f, 1f, it)
+            scaleY = lerp(0.8f, 1f, it)
+            alpha = it
+        }
+
+        with(time) {
+            scaleX = lerp(0.8f, 1f, it)
+            scaleY = lerp(0.8f, 1f, it)
+            alpha = it
+        }
     }
 
     init {
@@ -112,12 +138,10 @@ class AudioRecordingView(
         }
         watch(AudioRecordingViewModel::time) {
             if (it != null) {
-                time.visible()
-                timeTitle.visible()
                 time.text = it
+                timeAnimatedState = 1f
             } else {
-                time.gone()
-                timeTitle.gone()
+                timeAnimatedState = 0f
             }
         }
         watch(AudioRecordingViewModel::step) {
