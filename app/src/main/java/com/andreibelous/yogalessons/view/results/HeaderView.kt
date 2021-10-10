@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.LinearGradient
 import android.graphics.Outline
 import android.graphics.Shader
+import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
@@ -48,11 +49,11 @@ class HeaderView
                 outline.setRoundRect(0, 0, view.width, view.height, radius)
             }
         }
+        background = GradientDrawable(GradientDrawable.Orientation.TL_BR, colors)
     }
 
     private val text = findViewById<TextView>(R.id.header_item_title).apply {
         doOnPreDraw {
-
             paint.shader =
                 LinearGradient(
                     0f,

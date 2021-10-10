@@ -52,7 +52,7 @@ class AudioRecordingView(
     private val waves = root.findViewById<WavesView>(R.id.waves)
     private val button = root.findViewById<TextView>(R.id.button_step).apply {
         RippleDrawable(
-            ColorStateList.valueOf(android.graphics.Color.WHITE),
+            ColorStateList.valueOf(Color.WHITE),
             null,
             ShapeDrawable(OvalShape())
         )
@@ -60,7 +60,7 @@ class AudioRecordingView(
     private val buttonClose = root.findViewById<View>(R.id.button_close).apply {
         setOnClickListener { events.accept(Event.CloseClicked) }
         background = RippleDrawable(
-            ColorStateList.valueOf(android.graphics.Color.WHITE),
+            ColorStateList.valueOf(Color.WHITE),
             null,
             ShapeDrawable(OvalShape())
         )
@@ -71,22 +71,18 @@ class AudioRecordingView(
         val radiiArr = floatArrayOf(radii, radii, radii, radii, radii, radii, radii, radii)
         background =
             RippleDrawable(
-                ColorStateList.valueOf(Color.LTGRAY),
+                ColorStateList.valueOf(Color.WHITE),
                 GradientDrawable().apply {
                     setStroke(stroke.toInt(), Color.WHITE)
                     cornerRadii = radiiArr
                 },
-                ShapeDrawable(
-                    RoundRectShape(
-                        radiiArr,
-                        null,
-                        null
-                    )
-                )
+                ShapeDrawable(RoundRectShape(radiiArr, null, null))
             )
 
-        setOnClickListener { behaviour.state = BottomSheetBehavior.STATE_EXPANDED }
+        setOnClickListener { showResults() }
     }
+
+
     private val time = root.findViewById<TextView>(R.id.label_time).apply { alpha = 0.0f }
     private val timeTitle = root.findViewById<TextView>(R.id.label_title).apply { alpha = 0.0f }
     private val amplitudes = root.findViewById<AmplitudesDebugView>(R.id.amplitudes_view)
@@ -224,12 +220,14 @@ class AudioRecordingView(
         behaviour.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
+    private fun showResults() {
+        dimOverlay.visible()
+        behaviour.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+
     fun execute(action: Action) {
         when (action) {
-            is Action.ShowResultsDialog -> {
-                dimOverlay.visible()
-                behaviour.state = BottomSheetBehavior.STATE_EXPANDED
-            }
+            is Action.ShowResultsDialog -> showResults()
             is Action.ShowError -> {
                 dialog?.dismiss()
                 AlertDialog.Builder(context)

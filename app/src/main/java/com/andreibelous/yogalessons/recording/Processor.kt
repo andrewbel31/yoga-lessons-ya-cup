@@ -10,7 +10,7 @@ class Processor {
     private val filter = SGFilter(N, N)
     private val coefficients = SGFilter.computeSGCoefficients(N, N, 5)
     private val sdf = SimpleDateFormat("hh:mm:ss.SSS", Locale.getDefault())
-    private val sdfDuration = SimpleDateFormat("ss:SS", Locale.getDefault())
+    private val sdfDuration = SimpleDateFormat("ss.SS", Locale.getDefault())
     private val calendar = Calendar.getInstance()
 
     fun process(amplitude: List<Int>, times: List<Long>): ProcessedResult {
