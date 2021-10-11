@@ -242,7 +242,6 @@ class AudioRecordingView(
                     .create()
                     .also { dialog = it }
                     .show()
-
             }
         }
     }

@@ -3,6 +3,7 @@ package com.andreibelous.yogalessons
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     private var disposables: CompositeDisposable? = null
     private var audioRecorder: AudioRecorder? = null
     private var audioFeature: AudioRecordingFeature? = null
+    private var dialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,12 +67,30 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.shouldShowRequestPermissionRationale(this, permission)
 
         if (shouldShowRationale) {
-            // TODO
+            dialog?.dismiss()
+            AlertDialog.Builder(this)
+                .setTitle("Нужен микрофон")
+                .setMessage("Без доступа к микрофону приложение не будет работать :(. Пожалуйста, предоставьте его.")
+                .setPositiveButton("дать разрешение") { _, _ -> requestPermission() }
+                .setNegativeButton("отмена") { _, _ ->
+                    dialog?.dismiss()
+                    dialog = null
+                }
+                .setCancelable(true)
+                .create()
+                .also { dialog = it }
+                .show()
+
+            return
         }
 
+        requestPermission()
+    }
+
+    private fun requestPermission() {
         ActivityCompat.requestPermissions(
             this,
-            arrayOf(permission),
+            arrayOf(Manifest.permission.RECORD_AUDIO),
             REQUEST_MICROPHONE_PERMISSION_CODE
         )
     }
@@ -81,9 +101,19 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        // TODO fixme
 
-        audioFeature?.accept(AudioRecordingFeature.Wish.StartRecording)
+        val granted = mutableSetOf<String>()
+        if (requestCode == REQUEST_MICROPHONE_PERMISSION_CODE) {
+            permissions.forEachIndexed { index, permission ->
+                if (grantResults[index] == PackageManager.PERMISSION_GRANTED) {
+                    granted += permission
+                }
+            }
+        }
+
+        if (granted.contains(Manifest.permission.RECORD_AUDIO)) {
+            audioFeature?.accept(AudioRecordingFeature.Wish.StartRecording)
+        }
     }
 
     override fun onDestroy() {
@@ -96,6 +126,8 @@ class MainActivity : AppCompatActivity() {
         disposables = null
         audioRecorder?.dispose()
         audioRecorder = null
+        dialog?.dismiss()
+        dialog = null
     }
 
     private companion object {

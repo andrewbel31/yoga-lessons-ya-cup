@@ -33,18 +33,24 @@ class WavesView
 
     init {
         setWillNotDraw(false)
-        blob2.minRadius = context.dp(55f * BLOB_SCALE_COEF)
-        blob2.maxRadius = context.dp(67f * BLOB_SCALE_COEF)
-        blob2.generateBlob()
-
-        blob1.minRadius = context.dp(65f * BLOB_SCALE_COEF)
-        blob1.maxRadius = context.dp(75f * BLOB_SCALE_COEF)
-        blob1.generateBlob()
-
         blob1.paint.color =
             ColorUtils.setAlphaComponent(mainColor, (255 * 0.15f).toInt())
         blob2.paint.color =
             ColorUtils.setAlphaComponent(mainColor, (255 * 0.30f).toInt())
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+
+        val base = minOf(w, h) / 4f
+        blob2.minRadius = base * BLOB_SCALE_COEF * 0.60f
+        blob2.maxRadius = base * BLOB_SCALE_COEF * 0.7f
+        blob2.generateBlob()
+
+        blob1.minRadius = base * BLOB_SCALE_COEF * 0.65f
+        blob1.maxRadius = base * BLOB_SCALE_COEF * 0.80f
+        blob1.generateBlob()
+
     }
 
     private var animator: Animator? = null
