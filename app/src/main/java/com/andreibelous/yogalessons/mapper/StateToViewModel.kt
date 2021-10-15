@@ -4,7 +4,7 @@ import com.andreibelous.yogalessons.recording.AudioRecordingState
 import com.andreibelous.yogalessons.recording.AudioRecordingState.Step
 import com.andreibelous.yogalessons.view.AudioRecordingViewModel
 
-internal object StateToViewModel : (AudioRecordingState) -> AudioRecordingViewModel? {
+internal object StateToViewModel : (AudioRecordingState) -> AudioRecordingViewModel {
 
     override fun invoke(state: AudioRecordingState): AudioRecordingViewModel =
         AudioRecordingViewModel(
