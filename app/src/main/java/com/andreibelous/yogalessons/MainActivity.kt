@@ -1,7 +1,11 @@
 package com.andreibelous.yogalessons
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -12,11 +16,14 @@ import com.andreibelous.yogalessons.mapper.StateToViewModel
 import com.andreibelous.yogalessons.mapper.UiEventToWish
 import com.andreibelous.yogalessons.recording.AudioRecorder
 import com.andreibelous.yogalessons.recording.AudioRecordingFeature
+import com.andreibelous.yogalessons.recording.AudioRecordingState
+import com.andreibelous.yogalessons.recording.toName
 import com.andreibelous.yogalessons.view.AudioRecordingView
 import com.badoo.binder.Binder
 import com.badoo.binder.using
 import com.badoo.mvicore.android.lifecycle.CreateDestroyBinderLifecycle
 import io.reactivex.disposables.CompositeDisposable
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -50,7 +57,53 @@ class MainActivity : AppCompatActivity() {
                 dispose()
                 finish()
             }
+            is AudioRecordingView.Event.ShareClicked -> share()
             else -> Unit
+        }
+    }
+
+    private fun share() {
+        val result =
+            audioFeature
+                ?.state
+                ?.step
+                ?.safeCast<AudioRecordingState.Step.Finished>()
+                ?.data ?: return
+
+
+        val sb = StringBuilder()
+
+        sb.append("Информация о дыханни")
+            .append("\n")
+            .append("\n")
+
+        for (i in result.phases.indices) {
+            val phase = result.phases[i]
+            val name = phase.type.toName()
+
+            sb.append("${i + 1}. $name, начало: ${phase.startStr}, конец: ${phase.endStr}.")
+                .append("\n")
+                .append("Продолжительность - ${phase.durationStr} сек.")
+                .append("\n")
+                .append("\n")
+        }
+
+        sendEmail(sb.toString())
+    }
+
+    @SuppressLint("QueryPermissionsNeeded")
+    private fun sendEmail(text: String) {
+        val uri = Uri.parse("mailto:")
+            .buildUpon()
+            .appendQueryParameter("subject", "Информация о дыхании")
+            .appendQueryParameter("body", text)
+            .build()
+
+        val emailIntent = Intent(Intent.ACTION_SENDTO, uri)
+        try {
+            startActivity(Intent.createChooser(emailIntent, "Отправить e-mail"))
+        } catch (anfe: ActivityNotFoundException) {
+
         }
     }
 

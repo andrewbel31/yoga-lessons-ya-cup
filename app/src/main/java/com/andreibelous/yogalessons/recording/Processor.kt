@@ -9,7 +9,7 @@ class Processor {
 
     private val filter = SGFilter(N, N)
     private val coefficients = SGFilter.computeSGCoefficients(N, N, 5)
-    private val sdf = SimpleDateFormat("hh:mm:ss.SSS", Locale.getDefault())
+    private val sdf = SimpleDateFormat("HH:mm:ss.SS", Locale.getDefault())
     private val sdfDuration = SimpleDateFormat("ss.SS", Locale.getDefault())
     private val calendar = Calendar.getInstance()
 
@@ -225,8 +225,14 @@ data class Phase(
         object Inhale : Type
         object Exhale : Type
     }
-
 }
+
+fun Phase.Type.toName(): String =
+    when (this) {
+        Phase.Type.Pause -> "Пауза"
+        Phase.Type.Inhale -> "Вдох"
+        Phase.Type.Exhale -> "Выдох"
+    }
 
 data class ProcessedResult(
     val noiseLevel: Double,

@@ -57,6 +57,7 @@ class AudioRecordingView(
             ShapeDrawable(OvalShape())
         )
     }
+
     private val buttonClose = root.findViewById<View>(R.id.button_close).apply {
         setOnClickListener { events.accept(Event.CloseClicked) }
         background = RippleDrawable(
@@ -88,10 +89,11 @@ class AudioRecordingView(
     private val amplitudes = root.findViewById<AmplitudesDebugView>(R.id.amplitudes_view)
     private val resultsView = root.findViewById<ResultsView>(R.id.results_view)
     private val dimOverlay =
-        root.findViewById<View>(R.id.dim_overlay).apply {
-            alpha = 0.0f
-            gone()
-        }
+        root.findViewById<View>(R.id.dim_overlay)
+            .apply {
+                alpha = 0.0f
+                gone()
+            }
     private val behaviour = BottomSheetBehavior.from(resultsView).apply {
         addBottomSheetCallback(
             object : BottomSheetBehavior.BottomSheetCallback() {

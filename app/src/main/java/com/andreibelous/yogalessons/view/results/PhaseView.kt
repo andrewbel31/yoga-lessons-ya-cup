@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.andreibelous.yogalessons.R
 import com.andreibelous.yogalessons.recording.Phase
+import com.andreibelous.yogalessons.recording.toName
 import com.badoo.mvicore.modelWatcher
 
 class PhaseView
@@ -38,11 +39,4 @@ class PhaseView
         watch(Phase::type) { phaseTitle.text = it.toName() }
         watch(Phase::durationStr) { phaseDuration.text = "$it сек." }
     }
-
-    private fun Phase.Type.toName(): String =
-        when (this) {
-            Phase.Type.Pause -> "Пауза"
-            Phase.Type.Inhale -> "Вдох"
-            Phase.Type.Exhale -> "Выдох"
-        }
 }

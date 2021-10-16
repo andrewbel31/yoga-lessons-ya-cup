@@ -37,6 +37,8 @@ fun View.invisible() {
 
 inline fun <reified T> Any.cast() = this as T
 
+inline fun <reified T> Any.safeCast() = this as? T
+
 fun Context.getColorCompat(@ColorRes color: Int) = ContextCompat.getColor(this, color)
 
 fun Lifecycle.subscribe(
