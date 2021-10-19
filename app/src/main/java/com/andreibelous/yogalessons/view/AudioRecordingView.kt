@@ -198,7 +198,7 @@ class AudioRecordingView(
                                 events.accept(Event.ShareClicked)
                             }
                         )
-                        if (BuildConfig.DEBUG) {
+                        if (false) { // only for debug purposes
                             amplitudes.bind(
                                 AmplitudesViewModel(
                                     token = step.token,
